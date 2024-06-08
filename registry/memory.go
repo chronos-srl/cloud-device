@@ -1,8 +1,8 @@
 package registry
 
 import (
-	"cloud-device/device"
 	"errors"
+	"github.com/chronos-srl/cloud-device/device"
 )
 
 type memoryRegistry struct {

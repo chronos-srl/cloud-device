@@ -1,10 +1,10 @@
 package oven
 
 import (
-	"cloud-device/device"
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-protocol/command"
 )
 

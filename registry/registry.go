@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"cloud-device/device"
+	"github.com/chronos-srl/cloud-device/device"
 )
 
 type Registry interface {
