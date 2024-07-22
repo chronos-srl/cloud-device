@@ -83,6 +83,11 @@ type AlarmRegistry struct {
 	ErrorFlags uint16 `addr:"5"`
 }
 
+type ovenMetricsRegistry struct {
+	TemperaturaSchedaCarichi uint16 `json:"temperaturaSchedaCarichi"`
+	TemperaturaCN1           uint16 `json:"temperaturaCN1" swap:"ba"`
+}
+
 func NewOven() *Oven {
 	d := &device.D{
 		Type: "1",
@@ -183,6 +188,24 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 		}
 
 		return v, nil
+
+	case command.ReadMetricsType:
+		v := new(ovenMetricsRegistry)
+		if err := command.ParseReadResponse(response, v); err != nil {
+			return nil, err
+		}
+
+		var f interface{}
+		b, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &f); err != nil {
+			return nil, err
+		}
+
+		return f.(map[string]interface{}), err
 
 	default:
 		return nil, errors.New("invalid request type")
