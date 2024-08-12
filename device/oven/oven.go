@@ -94,12 +94,10 @@ type ovenMetricsRegistry struct {
 
 func NewOven() *Oven {
 	d := device.BaseDevice{
-		Type: "oven-01",
+		Id: "oven-01",
 		Info: &device.Info{
-			Name:             "Forno",
-			Model:            "Model-01",
-			SerialNumber:     "Serial-01",
-			FirmwareRevision: "1.0.0",
+			Name:  "Forno",
+			Model: "Model-01",
 		},
 	}
 
@@ -114,7 +112,7 @@ func NewOven() *Oven {
 }
 
 func (o *Oven) GetId() string {
-	return o.BaseDevice.Type
+	return o.BaseDevice.Id
 }
 
 func (o *Oven) GetInfo() *device.Info {

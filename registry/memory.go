@@ -13,7 +13,7 @@ type memoryRegistry struct {
 	devices map[string]device.Device
 }
 
-// NewMemoryRegistry create a in-memory device registry
+// NewMemoryRegistry create in-memory device registry
 func NewMemoryRegistry() Registry {
 	return &memoryRegistry{
 		devices: make(map[string]device.Device),
@@ -51,12 +51,14 @@ func (m *memoryRegistry) Get(id string) (device.Device, error) {
 	return d, nil
 }
 
-func (m *memoryRegistry) GetAllInfo() ([]device.Info, error) {
-	infos := make([]device.Info, 0)
-
-	for _, d := range m.devices {
-		infos = append(infos, *d.GetInfo())
+func (m *memoryRegistry) GetAllInfo() ([]device.BaseDevice, error) {
+	devices := make([]device.BaseDevice, 0)
+	for _, s := range m.devices {
+		devices = append(devices, device.BaseDevice{
+			Id:   s.GetId(),
+			Info: s.GetInfo(),
+		})
 	}
 
-	return infos, nil
+	return devices, nil
 }

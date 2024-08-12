@@ -22,14 +22,12 @@ type Device interface {
 }
 
 type BaseDevice struct {
-	Type string
+	Id   string
 	Info *Info
 }
 
 // Info describe Device information
 type Info struct {
-	Name             string `json:"name"`
-	Model            string `json:"model"`
-	SerialNumber     string `json:"serialNumber"`
-	FirmwareRevision string `json:"firmwareRevision"`
+	Name  string `json:"name"`
+	Model string `json:"model"`
 }
