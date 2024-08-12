@@ -8,8 +8,12 @@ import (
 	"github.com/chronos-srl/cloud-protocol/command"
 )
 
+var (
+	_ device.Device = (*Oven)(nil)
+)
+
 type Oven struct {
-	*device.D
+	device.BaseDevice
 	paramsRequest command.DeviceReadRequest
 	alarmsRequest command.DeviceReadRequest
 }
@@ -89,8 +93,8 @@ type ovenMetricsRegistry struct {
 }
 
 func NewOven() *Oven {
-	d := &device.D{
-		Type: "1",
+	d := device.BaseDevice{
+		Type: "oven-01",
 		Info: &device.Info{
 			Name:             "Forno",
 			Model:            "Model-01",
@@ -103,14 +107,14 @@ func NewOven() *Oven {
 	alarmsRequest, _ := command.NewDeviceReadRequest(&AlarmRegistry{})
 
 	return &Oven{
-		D:             d,
+		BaseDevice:    d,
 		paramsRequest: paramsRequest,
 		alarmsRequest: alarmsRequest,
 	}
 }
 
 func (o *Oven) GetId() string {
-	return o.D.Type
+	return o.BaseDevice.Type
 }
 
 func (o *Oven) GetInfo() *device.Info {

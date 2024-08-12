@@ -5,12 +5,16 @@ import (
 	"github.com/chronos-srl/cloud-device/device"
 )
 
+var (
+	_ Registry = (*memoryRegistry)(nil)
+)
+
 type memoryRegistry struct {
 	devices map[string]device.Device
 }
 
+// NewMemoryRegistry create a in-memory device registry
 func NewMemoryRegistry() Registry {
-	//_ := *(memoryRegistry{}).ni
 	return &memoryRegistry{
 		devices: make(map[string]device.Device),
 	}
@@ -22,7 +26,7 @@ func (m *memoryRegistry) Add(device device.Device) error {
 	}
 
 	if m.ExistsId(device.GetId()) {
-		return errors.New("device with this id already exists")
+		return NewDeviceError(device.GetId(), "device with this id already exists")
 	}
 
 	m.devices[device.GetId()] = device
@@ -41,7 +45,7 @@ func (m *memoryRegistry) ExistsId(id string) bool {
 func (m *memoryRegistry) Get(id string) (device.Device, error) {
 	d, ok := m.devices[id]
 	if !ok {
-		return nil, errors.New("device with this id does not exist")
+		return nil, NewDeviceError(id, "device not found")
 	}
 
 	return d, nil

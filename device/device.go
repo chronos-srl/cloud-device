@@ -21,7 +21,15 @@ type Device interface {
 	GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error)
 }
 
-type D struct {
+type BaseDevice struct {
 	Type string
 	Info *Info
+}
+
+// Info describe Device information
+type Info struct {
+	Name             string `json:"name"`
+	Model            string `json:"model"`
+	SerialNumber     string `json:"serialNumber"`
+	FirmwareRevision string `json:"firmwareRevision"`
 }
