@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-protocol/command"
+	"github.com/chronos-srl/cloud-protocol/mapping"
 )
 
 var (
@@ -83,7 +84,7 @@ type ovenWriteRegistry struct {
 	PotenzaImpostataPlatea     uint16 `json:"potenzaImpostataPlatea"`
 }
 
-type AlarmRegistry struct {
+type alarmRegistries struct {
 	ErrorFlags uint16 `addr:"5"`
 }
 
@@ -96,13 +97,15 @@ func NewOven() *Oven {
 	d := device.BaseDevice{
 		Id: "oven-01",
 		Info: &device.Info{
-			Name:  "Forno",
-			Model: "Model-01",
+			Name:    "Forno",
+			Version: "v1.0.0",
 		},
 	}
 
 	paramsRequest, _ := command.NewDeviceReadRequest(&ovenParamRegistry{})
-	alarmsRequest, _ := command.NewDeviceReadRequest(&AlarmRegistry{})
+	paramsRequest.Type = command.ReadParamsType
+	alarmsRequest, _ := command.NewDeviceReadRequest(&alarmRegistries{})
+	alarmsRequest.Type = command.ReadAlarmsType
 
 	return &Oven{
 		BaseDevice:    d,
@@ -136,7 +139,7 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 	switch rt {
 	case command.ReadParamsType:
 		v := new(ovenParamRegistry)
-		if err := command.ParseReadResponse(response, v); err != nil {
+		if err := mapping.UnmarshalUint16(response.Values, v); err != nil {
 			return nil, err
 		}
 
@@ -184,30 +187,15 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 		return fv, nil
 
 	case command.ReadAlarmsType:
-		v := new(AlarmRegistry)
-		if err := command.ParseReadResponse(response, v); err != nil {
+		v := new(alarmRegistries)
+		if err := mapping.UnmarshalUint16(response.Values, v); err != nil {
 			return nil, err
 		}
 
 		return v, nil
 
 	case command.ReadMetricsType:
-		v := new(ovenMetricsRegistry)
-		if err := command.ParseReadResponse(response, v); err != nil {
-			return nil, err
-		}
-
-		var f interface{}
-		b, err := json.Marshal(v)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.Unmarshal(b, &f); err != nil {
-			return nil, err
-		}
-
-		return f.(map[string]interface{}), err
+		return mapping.AsValueMapTyped(response.Values, ovenMetricsRegistry{})
 
 	default:
 		return nil, errors.New("invalid request type")

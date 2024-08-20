@@ -19,6 +19,8 @@ type Device interface {
 	// GetWriteRequestBytes encode the incoming frontend request into a modbus registry payload
 	// This function convert the frontend struct into a modbus bytes ready values
 	GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error)
+	// ReadAlarms read alarms information from device response
+	//ReadAlarms(ctx context.Context) ([]alarm.DeviceAlarm, error)
 }
 
 type BaseDevice struct {
@@ -28,6 +30,6 @@ type BaseDevice struct {
 
 // Info describe Device information
 type Info struct {
-	Name  string `json:"name"`
-	Model string `json:"model"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
 }
