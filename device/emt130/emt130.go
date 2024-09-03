@@ -26,7 +26,7 @@ func NewEmt130() device.Device {
 }
 
 func (e Emt130) GetId() string {
-	return "emt130:v1"
+	return "emt130-v1"
 }
 
 func (e Emt130) GetInfo() *device.Info {
@@ -41,7 +41,7 @@ func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, re
 	switch rt {
 	case command.ReadMetricsType:
 		var regs = new(Metrics)
-		if err := mapping.UnmarshalUint16(response.Values, regs); err != nil {
+		if err := mapping.Unmarshal(response.Values, regs); err != nil {
 			return nil, err
 		}
 
@@ -50,6 +50,10 @@ func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, re
 	default:
 		return "", errors.New("not implemented")
 	}
+}
+
+func (e Emt130) ParseMetricsRequest(ctx context.Context, response command.ReadResponse) (mapping.ValueMap, error) {
+	return mapping.AsValueMapTyped(response.Values, Metrics{})
 }
 
 func (e Emt130) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {

@@ -3,6 +3,7 @@ package device
 import (
 	"context"
 	"github.com/chronos-srl/cloud-protocol/command"
+	"github.com/chronos-srl/cloud-protocol/mapping"
 )
 
 // Device a physical device
@@ -16,6 +17,8 @@ type Device interface {
 	// ParseReadRequest parse device response into a device interface.
 	// In this function we can do some modification and return a frontend ready struct
 	ParseReadRequest(ctx context.Context, rt command.RequestType, response command.ReadResponse) (interface{}, error)
+	// ParseMetricsRequest parse device metrics request into a `ValueMap` as map[string]any
+	ParseMetricsRequest(ctx context.Context, response command.ReadResponse) (mapping.ValueMap, error)
 	// GetWriteRequestBytes encode the incoming frontend request into a modbus registry payload
 	// This function convert the frontend struct into a modbus bytes ready values
 	GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error)

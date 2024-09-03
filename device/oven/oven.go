@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/chronos-srl/cloud-device/alarm"
 	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-protocol/command"
 	"github.com/chronos-srl/cloud-protocol/mapping"
@@ -27,6 +28,8 @@ var alarmsString = []string{
 	"CN5 Temp Val out of Range",
 }
 
+var _ alarm.HasAlarm = (*ovenParamRegistry)(nil)
+
 type ovenParamRegistry struct {
 	TemperaturaSchedaCarichi   uint16 `json:"temperaturaSchedaCarichi"`
 	TemperaturaCN1             uint16 `json:"temperaturaCN1" swap:"ba"`
@@ -40,6 +43,10 @@ type ovenParamRegistry struct {
 	PotenzaImpostataCielo      uint16 `json:"potenzaImpostataCielo"`
 	PotenzaImpostataPlatea     uint16 `json:"potenzaImpostataPlatea"`
 	OperativeFlags             uint16 `json:"operativeFlags"`
+}
+
+func (r ovenParamRegistry) GetAlarms() ([]alarm.Alarm, error) {
+	return nil, nil
 }
 
 type ovenParamResponse struct {
@@ -139,7 +146,7 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 	switch rt {
 	case command.ReadParamsType:
 		v := new(ovenParamRegistry)
-		if err := mapping.UnmarshalUint16(response.Values, v); err != nil {
+		if err := mapping.Unmarshal(response.Values, v); err != nil {
 			return nil, err
 		}
 
@@ -188,7 +195,7 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 
 	case command.ReadAlarmsType:
 		v := new(alarmRegistries)
-		if err := mapping.UnmarshalUint16(response.Values, v); err != nil {
+		if err := mapping.Unmarshal(response.Values, v); err != nil {
 			return nil, err
 		}
 
@@ -200,6 +207,10 @@ func (o *Oven) ParseReadRequest(ctx context.Context, rt command.RequestType, res
 	default:
 		return nil, errors.New("invalid request type")
 	}
+}
+
+func (o *Oven) ParseMetricsRequest(ctx context.Context, response command.ReadResponse) (mapping.ValueMap, error) {
+	return mapping.AsValueMapTyped(response.Values, ovenMetricsRegistry{})
 }
 
 func (o *Oven) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {
