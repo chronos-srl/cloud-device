@@ -20,6 +20,10 @@ type Oven struct {
 	alarmsRequest command.DeviceReadRequest
 }
 
+func (o *Oven) GetRegistries(ctx context.Context) (mapping.Registries, error) {
+	return make(mapping.Registries, 0), nil
+}
+
 var alarmsString = []string{
 	"TFT Comunication Error",
 	"Board Temp Val out of Range",

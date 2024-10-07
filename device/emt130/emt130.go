@@ -57,6 +57,9 @@ func (e Emt130) ParseMetricsRequest(ctx context.Context, response command.ReadRe
 }
 
 func (e Emt130) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {
-	//TODO implement me
 	panic("implement me")
+}
+
+func (e Emt130) GetRegistries(ctx context.Context) (mapping.Registries, error) {
+	return mapping.AsRegistries(Metrics{})
 }
