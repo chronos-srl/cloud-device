@@ -13,15 +13,18 @@ var (
 )
 
 type Emt130 struct {
-	info *device.Info
+	info           *device.Info
+	metricsRequest command.DeviceReadRequest
 }
 
 func NewEmt130() device.Device {
+	metricsRequest, _ := command.NewDeviceReadRequest(&Metrics{})
 	return Emt130{
 		info: &device.Info{
 			Name:    "Emt130",
 			Version: "v1.0.0",
 		},
+		metricsRequest: metricsRequest,
 	}
 }
 
@@ -34,7 +37,12 @@ func (e Emt130) GetInfo() *device.Info {
 }
 
 func (e Emt130) GetReadRequest(rt command.RequestType) (command.DeviceReadRequest, error) {
-	return command.DeviceReadRequest{}, errors.New("not implemented")
+	switch rt {
+	case command.ReadMetricsType:
+		return e.metricsRequest, nil
+	default:
+		return command.DeviceReadRequest{}, errors.New("not implemented")
+	}
 }
 
 func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, response command.ReadResponse) (interface{}, error) {
