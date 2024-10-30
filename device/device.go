@@ -8,8 +8,8 @@ import (
 
 // Device a physical device
 type Device interface {
-	// GetId unique device identifier
-	GetId() string
+	// GetModel unique device identifier
+	GetModel() string
 	// GetInfo device information name, firmware ...
 	GetInfo() *Info
 	// GetReadRequest return the read request that indicate the registry address and quantity to read from device
@@ -27,12 +27,11 @@ type Device interface {
 }
 
 type BaseDevice struct {
-	Id   string
 	Info *Info
 }
 
 // Info describe Device information
 type Info struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	Model           string `json:"model"`
+	FirmwareVersion string `json:"firmwareVersion"`
 }

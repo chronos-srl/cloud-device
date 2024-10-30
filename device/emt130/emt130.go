@@ -21,15 +21,15 @@ func NewEmt130() device.Device {
 	metricsRequest, _ := command.NewDeviceReadRequest(&Metrics{})
 	return Emt130{
 		info: &device.Info{
-			Name:    "Emt130",
-			Version: "v1.0.0",
+			Model:           "emt-130",
+			FirmwareVersion: "1.0.0",
 		},
 		metricsRequest: metricsRequest,
 	}
 }
 
-func (e Emt130) GetId() string {
-	return "emt130-v1"
+func (e Emt130) GetModel() string {
+	return e.info.Model
 }
 
 func (e Emt130) GetInfo() *device.Info {
