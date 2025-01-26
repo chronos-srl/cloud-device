@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-device/device/emt130"
-	"github.com/chronos-srl/cloud-device/device/oven"
 )
 
 var (
@@ -24,7 +23,6 @@ type memoryRegistry struct {
 
 func (m *memoryRegistry) Load() {
 	_ = m.Add(emt130.NewEmt130())
-	_ = m.Add(oven.NewOven())
 }
 
 func (m *memoryRegistry) Add(device device.Device) error {

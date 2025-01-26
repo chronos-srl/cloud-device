@@ -13,19 +13,28 @@ var (
 )
 
 type Emt130 struct {
-	info           *device.Info
-	metricsRequest command.DeviceReadRequest
+	info            *device.Info
+	metricsRequests []command.RegistryReadRequest
 }
 
 func NewEmt130() device.Device {
-	metricsRequest, _ := command.NewDeviceReadRequest(&Metrics{})
+	metricsRequests := make([]command.RegistryReadRequest, 0)
+	mr, _ := command.NewRegistryReadRequest(&Metrics{})
+	metricsRequests = append(metricsRequests, mr)
+	mr2, _ := command.NewRegistryReadRequest(&Metrics2{})
+	metricsRequests = append(metricsRequests, mr2)
+
 	return Emt130{
 		info: &device.Info{
 			Model:           "emt-130",
 			FirmwareVersion: "1.0.0",
 		},
-		metricsRequest: metricsRequest,
+		metricsRequests: metricsRequests,
 	}
+}
+
+func (e Emt130) GetMetricsRequests(ctx context.Context) ([]command.RegistryReadRequest, error) {
+	return e.metricsRequests, nil
 }
 
 func (e Emt130) GetModel() string {
@@ -37,12 +46,7 @@ func (e Emt130) GetInfo() *device.Info {
 }
 
 func (e Emt130) GetReadRequest(rt command.RequestType) (command.DeviceReadRequest, error) {
-	switch rt {
-	case command.ReadMetricsType:
-		return e.metricsRequest, nil
-	default:
-		return command.DeviceReadRequest{}, errors.New("not implemented")
-	}
+	return command.DeviceReadRequest{}, errors.New("not implemented")
 }
 
 func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, response command.ReadResponse) (interface{}, error) {
@@ -60,8 +64,15 @@ func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, re
 	}
 }
 
-func (e Emt130) ParseMetricsRequest(ctx context.Context, response command.ReadResponse) (mapping.ValueMap, error) {
-	return mapping.AsValueMapTyped(response.Values, Metrics{})
+func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response command.ReadResponse) (mapping.ValueMap, error) {
+	switch index {
+	case 0:
+		return mapping.AsValueMapTyped(response.Values, Metrics{})
+	case 1:
+		return mapping.AsValueMapTyped(response.Values, Metrics2{})
+	}
+
+	return nil, errors.New("not implemented")
 }
 
 func (e Emt130) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {
