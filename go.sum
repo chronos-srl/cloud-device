@@ -1,6 +1,5 @@
-github.com/chronos-srl/cloud-protocol v1.1.1-0.20241025070357-14034de5b54d/go.mod h1:ZYJQ06C+Cs8WS/NgE6lQmKtPXmfq8K/0MREc5g3CEpY=
-github.com/chronos-srl/cloud-protocol v1.1.1-0.20250126093237-34ba186ea8aa h1:cSDXklLIm50ZPUD8b6YQ2rcZ906jbA9l0wcdvzAE5o8=
-github.com/chronos-srl/cloud-protocol v1.1.1-0.20250126093237-34ba186ea8aa/go.mod h1:ZYJQ06C+Cs8WS/NgE6lQmKtPXmfq8K/0MREc5g3CEpY=
+github.com/chronos-srl/cloud-protocol v1.1.1-0.20250128092107-c03ffed310c1 h1:N7j3XusW9DrcONliwMC1nQGhMkPAKA+v+EwArezOUSo=
+github.com/chronos-srl/cloud-protocol v1.1.1-0.20250128092107-c03ffed310c1/go.mod h1:DQh/cNbo1BrjG8ab8vvd634hdsAok8uDb8yjH3wJh0g=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
