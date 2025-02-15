@@ -2,10 +2,12 @@ package emt130
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-protocol/command"
 	"github.com/chronos-srl/cloud-protocol/mapping"
+	"github.com/chronos-srl/cloud-protocol/pb"
 )
 
 var (
@@ -14,14 +16,14 @@ var (
 
 type Emt130 struct {
 	info            *device.Info
-	metricsRequests []command.RegistryReadRequest
+	metricsRequests []pb.ReadRegistryRequest
 }
 
 func NewEmt130() device.Device {
-	metricsRequests := make([]command.RegistryReadRequest, 0)
-	mr, _ := command.NewRegistryReadRequest(&Metrics{})
+	metricsRequests := make([]pb.ReadRegistryRequest, 0)
+	mr, _ := command.MappingStructToReadRegistry(&VLMetrics{})
 	metricsRequests = append(metricsRequests, mr)
-	mr2, _ := command.NewRegistryReadRequest(&Metrics2{})
+	mr2, _ := command.MappingStructToReadRegistry(&IMetrics{})
 	metricsRequests = append(metricsRequests, mr2)
 
 	return Emt130{
@@ -33,8 +35,34 @@ func NewEmt130() device.Device {
 	}
 }
 
-func (e Emt130) GetMetricsRequests(ctx context.Context) ([]command.RegistryReadRequest, error) {
+func (e Emt130) GetReadRequest() (pb.ReadRegistryRequest, error) {
+	return pb.ReadRegistryRequest{}, errors.New("not implemented")
+}
+
+func (e Emt130) GetMetricsRequests(_ context.Context) ([]pb.ReadRegistryRequest, error) {
 	return e.metricsRequests, nil
+}
+
+func (e Emt130) ParseReadRequest(_ context.Context, _ *pb.ReadRegistryResponse) (interface{}, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (e Emt130) ParseMetricsRequest(_ context.Context, index int, response *pb.DeviceReadRegistryResponse) (mapping.ValueMap, error) {
+	// TODO cambiare metodo AsValueMapTyped
+	rBytes := response.Response.Values
+	v := make([]uint16, len(rBytes)/2)
+	for i := 0; i < len(v); i += 2 {
+		v[i] = binary.BigEndian.Uint16(rBytes[i : i+2])
+	}
+
+	switch index {
+	case 0:
+		return mapping.AsValueMapTyped(v, VLMetrics{})
+	case 1:
+		return mapping.AsValueMapTyped(v, IMetrics{})
+	}
+
+	return nil, errors.New("not implemented")
 }
 
 func (e Emt130) GetModel() string {
@@ -45,40 +73,10 @@ func (e Emt130) GetInfo() *device.Info {
 	return e.info
 }
 
-func (e Emt130) GetReadRequest(rt command.RequestType) (command.DeviceReadRequest, error) {
-	return command.DeviceReadRequest{}, errors.New("not implemented")
-}
-
-func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, response command.ReadResponse) (interface{}, error) {
-	switch rt {
-	case command.ReadMetricsType:
-		var regs = new(Metrics)
-		if err := mapping.Unmarshal(response.Values, regs); err != nil {
-			return nil, err
-		}
-
-		return response, nil
-
-	default:
-		return "", errors.New("not implemented")
-	}
-}
-
-func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response command.ReadResponse) (mapping.ValueMap, error) {
-	switch index {
-	case 0:
-		return mapping.AsValueMapTyped(response.Values, Metrics{})
-	case 1:
-		return mapping.AsValueMapTyped(response.Values, Metrics2{})
-	}
-
-	return nil, errors.New("not implemented")
-}
-
-func (e Emt130) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {
+func (e Emt130) GetWriteRequestBytes(_ context.Context, _ []byte) (*pb.WriteRegistryRequest, error) {
 	panic("implement me")
 }
 
-func (e Emt130) GetRegistries(ctx context.Context) (mapping.Registries, error) {
-	return mapping.AsRegistries(Metrics{})
+func (e Emt130) GetRegistries(_ context.Context) (mapping.Registries, error) {
+	return mapping.AsRegistries(VLMetrics{})
 }
