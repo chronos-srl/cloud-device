@@ -14,11 +14,11 @@ var (
 
 type Emt130 struct {
 	info            *device.Info
-	metricsRequests []command.RegistryReadRequest
+	metricsRequests []command.ReadRegistryRequest
 }
 
 func NewEmt130() device.Device {
-	metricsRequests := make([]command.RegistryReadRequest, 0)
+	metricsRequests := make([]command.ReadRegistryRequest, 0)
 	mr, _ := command.NewRegistryReadRequest(&Metrics{})
 	metricsRequests = append(metricsRequests, mr)
 	mr2, _ := command.NewRegistryReadRequest(&Metrics2{})
@@ -33,7 +33,7 @@ func NewEmt130() device.Device {
 	}
 }
 
-func (e Emt130) GetMetricsRequests(ctx context.Context) ([]command.RegistryReadRequest, error) {
+func (e Emt130) GetMetricsRequests(ctx context.Context) ([]command.ReadRegistryRequest, error) {
 	return e.metricsRequests, nil
 }
 
@@ -45,26 +45,7 @@ func (e Emt130) GetInfo() *device.Info {
 	return e.info
 }
 
-func (e Emt130) GetReadRequest(rt command.RequestType) (command.DeviceReadRequest, error) {
-	return command.DeviceReadRequest{}, errors.New("not implemented")
-}
-
-func (e Emt130) ParseReadRequest(ctx context.Context, rt command.RequestType, response command.ReadResponse) (interface{}, error) {
-	switch rt {
-	case command.ReadMetricsType:
-		var regs = new(Metrics)
-		if err := mapping.Unmarshal(response.Values, regs); err != nil {
-			return nil, err
-		}
-
-		return response, nil
-
-	default:
-		return "", errors.New("not implemented")
-	}
-}
-
-func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response command.ReadResponse) (mapping.ValueMap, error) {
+func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response command.ReadDeviceRegistryResponse) (mapping.ValueMap, error) {
 	switch index {
 	case 0:
 		return mapping.AsValueMapTyped(response.Values, Metrics{})
@@ -73,10 +54,6 @@ func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response com
 	}
 
 	return nil, errors.New("not implemented")
-}
-
-func (e Emt130) GetWriteRequestBytes(ctx context.Context, body []byte) (command.DeviceWriteRequest, error) {
-	panic("implement me")
 }
 
 func (e Emt130) GetRegistries(ctx context.Context) (mapping.Registries, error) {
