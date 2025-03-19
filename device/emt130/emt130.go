@@ -6,6 +6,7 @@ import (
 	"github.com/chronos-srl/cloud-device/device"
 	"github.com/chronos-srl/cloud-protocol/command"
 	"github.com/chronos-srl/cloud-protocol/mapping"
+	"slices"
 )
 
 var (
@@ -57,5 +58,15 @@ func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response com
 }
 
 func (e Emt130) GetRegistries(ctx context.Context) (mapping.Registries, error) {
-	return mapping.AsRegistries(Metrics{})
+	regs1, err := mapping.AsRegistries(Metrics{})
+	if err != nil {
+		return nil, err
+	}
+
+	regs2, err := mapping.AsRegistries(Metrics2{})
+	if err != nil {
+		return nil, err
+	}
+
+	return slices.Concat(regs1, regs2), nil
 }
