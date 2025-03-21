@@ -34,7 +34,7 @@ func NewEmt130() device.Device {
 	}
 }
 
-func (e Emt130) GetMetricsRequests(ctx context.Context) ([]command.ReadRegistryRequest, error) {
+func (e Emt130) GetMetricsRequests(_ context.Context) ([]command.ReadRegistryRequest, error) {
 	return e.metricsRequests, nil
 }
 
@@ -46,18 +46,19 @@ func (e Emt130) GetInfo() *device.Info {
 	return e.info
 }
 
-func (e Emt130) ParseMetricsRequest(ctx context.Context, index int, response command.ReadDeviceRegistryResponse) (mapping.ValueMap, error) {
+func (e Emt130) ParseMetricsRequest(_ context.Context, index int, response command.ReadDeviceRegistryResponse) (mapping.ValueMap, error) {
+	bytes := mapping.ToBytes(response.Values)
 	switch index {
 	case 0:
-		return mapping.AsValueMapTyped(response.Values, Metrics{})
+		return mapping.AsValueMapTyped(bytes, Metrics{})
 	case 1:
-		return mapping.AsValueMapTyped(response.Values, Metrics2{})
+		return mapping.AsValueMapTyped(bytes, Metrics2{})
 	}
 
 	return nil, errors.New("not implemented")
 }
 
-func (e Emt130) GetRegistries(ctx context.Context) (mapping.Registries, error) {
+func (e Emt130) GetRegistries(_ context.Context) (mapping.Registries, error) {
 	regs1, err := mapping.AsRegistries(Metrics{})
 	if err != nil {
 		return nil, err
