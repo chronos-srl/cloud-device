@@ -15,5 +15,7 @@ type Registry interface {
 	// Get device by device id, throw error if not found
 	Get(id string) (device.Device, error)
 	// GetAllInfo return all device information
-	GetAllInfo() ([]device.BaseDevice, error)
+	GetAllInfo() ([]device.Info, error)
+	// Load add all know devices from libs
+	Load()
 }
